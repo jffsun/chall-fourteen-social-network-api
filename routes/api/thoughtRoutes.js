@@ -6,7 +6,7 @@ const {
 // /api/students
 router.route('/').get(getThoughts);
 
-// // /api/students/:studentId
+// // /api/thoughts/:thoughtId
 // router.route('/:studentId').get(getSingleStudent).delete(deleteStudent);
 
 // // /api/students/:studentId/assignments
