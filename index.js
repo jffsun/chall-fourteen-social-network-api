@@ -2,14 +2,13 @@
 const express = require('express');
 
 // Allows us to connect to MongoDB
-const db = require('./config/connection');
+const db = require('./utils/connection');
 const routes = require('./routes');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.urlencoded({ extended: true })); 
 app.use(routes);
 
 db.once('open', () => {
