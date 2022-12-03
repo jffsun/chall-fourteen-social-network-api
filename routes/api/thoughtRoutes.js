@@ -1,18 +1,23 @@
 const router = require('express').Router();
+
+// Controller functions for our Thought CRUD operations
 const {
   getThoughts,
+  getSingleThought,
+  createThought,
+  updateThought,
+  deleteThought,
+  addReaction,
+  removeReaction,
 } = require('../../controllers/thoughtController');
 
 // /api/students
-router.route('/').get(getThoughts);
+router.route('/').get(getThoughts).post(createThought);
 
-// // /api/thoughts/:thoughtId
-// router.route('/:studentId').get(getSingleStudent).delete(deleteStudent);
+// /api/users/:thoughtId
+router.route('/:thoughtId').get(getSingleThought).put(updateThought).delete(deleteThought);
 
-// // /api/students/:studentId/assignments
-// router.route('/:studentId/assignments').post(addAssignment);
-
-// // /api/students/:studentId/assignments/:assignmentId
-// router.route('/:studentId/assignments/:assignmentId').delete(removeAssignment);
+// /api/thoughts/:thoughtId/reactions
+router.route('/:thoughtId/reactions').post(addReaction).delete(removeReaction);
 
 module.exports = router;

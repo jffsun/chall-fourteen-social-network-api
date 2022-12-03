@@ -1,8 +1,8 @@
-const { ObjectId } = require('mongoose').Types;
-const { User, Thought } = require('../models');
+const { User, } = require('../models');
 
 module.exports = {
-  // Get all users with mongoose's find method
+
+  // Get all users
   getUsers(req, res) {
     User.find()
       .then((users) => res.json(users))
@@ -11,14 +11,14 @@ module.exports = {
         return res.status(500).json(err);
       });
   },
-  // Get one user with mongoose's find method
+  // Get one user
   getSingleUser(req, res) {
     User.findOne({ _id: req.params.userId })
 
-      // VersionKey of document
+      // versionKey of document
       .select('-__v')
       .then(async (user) =>
-      
+
         // If user cannot be found send 404 status error
         !user
           ? res.status(404).json({ message: 'No user with that ID' })
@@ -39,9 +39,28 @@ module.exports = {
       });
   },
 
+  // Update a user
+  updateUser(req, res) {
+    User.findOneAndUpdate(
+      { _id: req.params.userId },
+      
+      // $set operator replaces previous value with the specified value
+      { $set: req.body },
+      
+      // Updated user must still meet field requirements and return the updated document
+      { runValidators: true, new: true }
+    )
+      .then((user) =>
+        !user
+          ? res.status(404).json({ message: 'No user with this id!' })
+          : res.json(user)
+      )
+      .catch((err) => res.status(500).json(err));
+  },
+
   // Delete a user
   deleteUser(req, res) {
-    User.findOneAndRemove({ _id: req.params.studentId })
+    User.findOneAndRemove({ _id: req.params.userId })
       .then((user) =>
         !user
           ? res.status(404).json({ message: 'No such user exists' })
@@ -53,38 +72,45 @@ module.exports = {
       });
   },
 
-  // // Add an assignment to a student
-  // addAssignment(req, res) {
-  //   console.log('You are adding an assignment');
-  //   console.log(req.body);
-  //   Student.findOneAndUpdate(
-  //     { _id: req.params.studentId },
-  //     { $addToSet: { assignments: req.body } },
-  //     { runValidators: true, new: true }
-  //   )
-  //     .then((student) =>
-  //       !student
-  //         ? res
-  //             .status(404)
-  //             .json({ message: 'No student found with that ID :(' })
-  //         : res.json(student)
-  //     )
-  //     .catch((err) => res.status(500).json(err));
-  // },
-  // // Remove assignment from a student
-  // removeAssignment(req, res) {
-  //   Student.findOneAndUpdate(
-  //     { _id: req.params.studentId },
-  //     { $pull: { assignment: { assignmentId: req.params.assignmentId } } },
-  //     { runValidators: true, new: true }
-  //   )
-  //     .then((student) =>
-  //       !student
-  //         ? res
-  //             .status(404)
-  //             .json({ message: 'No student found with that ID :(' })
-  //         : res.json(student)
-  //     )
-  //     .catch((err) => res.status(500).json(err));
-  // },
+   // Add a friend to user's friend list by id
+   addFriend(req, res) {
+    User.findOneAndUpdate(
+      
+      // Find user by id in request parameters
+      { _id: req.params.userId },
+
+      // Append friend's id to user's friends array 
+      { $push: { friends: req.params.friendId } },
+
+      // Return updated user
+      { runValidators: true, new: true }
+    )
+      .then((user) =>
+        !user
+          ? res
+              .status(404)
+              .json({ message: 'No student found with that ID' })
+          : res.json(user)
+      )
+      .catch((err) => res.status(500).json(err));
+  },
+
+  // Remove friend from a user's friends list
+  removeFriend(req, res) {
+    User.findOneAndUpdate(
+      { _id: req.params.userId },
+      
+      // Removes friend's id from the user's friends array 
+      { $pull: { friends: req.params.friendId } },
+      { runValidators: true, new: true }
+    )
+      .then((user) =>
+        !user
+          ? res
+              .status(404)
+              .json({ message: 'No user found with that ID :(' })
+          : res.json(user)
+      )
+      .catch((err) => res.status(500).json(err));
+  },
 };

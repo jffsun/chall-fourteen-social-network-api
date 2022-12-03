@@ -5,6 +5,7 @@ const userSchema = new Schema(
       username: {
         type: String,
         required: true,
+
         // Removes whitespace before and after string
         trim: true,
         unique: true,
@@ -13,6 +14,7 @@ const userSchema = new Schema(
         type: String,
         required: true,
         unique: true,
+
         // Regex expression to validate input matches email address format
         match: [/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/, 'Please fill a valid email address']
       },
@@ -35,8 +37,8 @@ const userSchema = new Schema(
       toJSON: {
         virtuals: true,
       },
-      // Automatically generate id for user
-      id: true,
+      // _id is already generated so we can set to false
+      id: false,
     },
 );
 
